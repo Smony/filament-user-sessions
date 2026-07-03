@@ -1,5 +1,9 @@
 # Filament User Sessions
 
+[![Latest Version](https://img.shields.io/packagist/v/smony/filament-user-sessions.svg)](https://packagist.org/packages/smony/filament-user-sessions)
+[![Total Downloads](https://img.shields.io/packagist/dt/smony/filament-user-sessions.svg)](https://packagist.org/packages/smony/filament-user-sessions)
+[![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE.md)
+
 See every active session across your app — who's logged in, from where, on what device — and force-logout anyone with one click, right from your Filament admin panel.
 
 ## Requirements
@@ -51,4 +55,3 @@ php artisan vendor:publish --tag=filament-user-sessions-config
 ## License
 
 MIT
-# filament-user-sessions
