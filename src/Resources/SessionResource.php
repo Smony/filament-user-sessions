@@ -2,6 +2,8 @@
 
 namespace Smony\FilamentUserSessions\Resources;
 
+use Filament\Actions\Action;
+use Filament\Actions\BulkAction;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
@@ -76,8 +78,8 @@ class SessionResource extends Resource
                         now()->subMinutes(config('filament-user-sessions.online_threshold_minutes', 5))->timestamp,
                     )),
             ])
-            ->actions([
-                Tables\Actions\Action::make('revoke')
+            ->recordActions([
+                Action::make('revoke')
                     ->label('Revoke')
                     ->icon('heroicon-o-x-circle')
                     ->color('danger')
@@ -85,8 +87,8 @@ class SessionResource extends Resource
                     ->visible(fn (Session $record): bool => ! $record->isCurrentDevice())
                     ->action(fn (Session $record) => $record->delete()),
             ])
-            ->bulkActions([
-                Tables\Actions\BulkAction::make('revoke')
+            ->toolbarActions([
+                BulkAction::make('revoke')
                     ->label('Revoke selected')
                     ->icon('heroicon-o-x-circle')
                     ->color('danger')
