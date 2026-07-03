@@ -1,0 +1,28 @@
+{
+    "name": "smony/filament-user-sessions",
+    "description": "View all active user sessions and force-logout any user from your Filament admin panel.",
+    "keywords": ["laravel", "filament", "sessions", "admin", "security"],
+    "license": "MIT",
+    "require": {
+        "php": "^8.2",
+        "filament/filament": "^3.0",
+        "jenssegers/agent": "^2.6"
+    },
+    "autoload": {
+        "psr-4": {
+            "Smony\\FilamentUserSessions\\": "src/"
+        }
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "Smony\\FilamentUserSessions\\FilamentUserSessionsServiceProvider"
+            ]
+        }
+    },
+    "config": {
+        "sort-packages": true
+    },
+    "minimum-stability": "stable",
+    "prefer-stable": true
+}
