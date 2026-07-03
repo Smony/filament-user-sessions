@@ -2,24 +2,27 @@
 
 namespace Smony\FilamentUserSessions\Resources;
 
+use BackedEnum;
 use Filament\Actions\Action;
 use Filament\Actions\BulkAction;
 use Filament\Resources\Resource;
+use Filament\Support\Icons\Heroicon;
 use Filament\Tables;
 use Filament\Tables\Table;
 use Jenssegers\Agent\Agent;
 use Smony\FilamentUserSessions\Models\Session;
 use Smony\FilamentUserSessions\Resources\SessionResource\Pages\ListSessions;
+use UnitEnum;
 
 class SessionResource extends Resource
 {
     protected static ?string $model = Session::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-computer-desktop';
+    protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedComputerDesktop;
 
     protected static ?string $navigationLabel = 'User Sessions';
 
-    protected static ?string $navigationGroup = 'Security';
+    protected static string|UnitEnum|null $navigationGroup = 'Security';
 
     public static function canCreate(): bool
     {
