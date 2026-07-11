@@ -96,7 +96,7 @@ class SessionResource extends Resource
                     ->icon('heroicon-o-x-circle')
                     ->color('danger')
                     ->requiresConfirmation()
-                    ->action(fn ($records) => $records->each->delete()),
+                    ->action(fn ($records) => $records->reject->isCurrentDevice()->each->delete()),
             ]);
     }
 
