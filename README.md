@@ -9,7 +9,7 @@ See every active session across your app — who's logged in, from where, on wha
 ## Requirements
 
 - Laravel with `SESSION_DRIVER=database` (this plugin reads the `sessions` table, so file/cookie/array drivers won't work)
-- Filament v4
+- Filament v4 or v5
 
 > Still on Filament v3? Use `composer require smony/filament-user-sessions:^1.0` instead.
 
