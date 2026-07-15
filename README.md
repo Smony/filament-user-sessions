@@ -54,6 +54,41 @@ Optionally publish the config to change the sessions table name or the "online" 
 php artisan vendor:publish --tag=filament-user-sessions-config
 ```
 
+## Authorization
+
+By default, any user who can access your panel can view all sessions and revoke any of them (except their own current one). If that's too permissive — e.g. you don't want a support-role admin to be able to kick out a superadmin — register your own policy for the `Session` model in your `AuthServiceProvider`:
+
+```php
+use Illuminate\Support\Facades\Gate;
+use Smony\FilamentUserSessions\Models\Session;
+
+Gate::policy(Session::class, YourSessionPolicy::class);
+```
+
+Your policy can implement `viewAny`, `view`, `delete`, and `deleteAny` — the same names Laravel and Filament use for standard CRUD abilities:
+
+```php
+class YourSessionPolicy
+{
+    public function viewAny(User $user): bool
+    {
+        return $user->isAdmin();
+    }
+
+    public function delete(User $user, Session $session): bool
+    {
+        return $user->isSuperAdmin() || $session->user_id === $user->id;
+    }
+
+    public function deleteAny(User $user): bool
+    {
+        return $user->isSuperAdmin();
+    }
+}
+```
+
+Registering it in your own `AuthServiceProvider` overrides the package's permissive default, since app providers boot after package providers.
+
 ## License
 
 MIT

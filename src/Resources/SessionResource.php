@@ -88,6 +88,7 @@ class SessionResource extends Resource
                     ->color('danger')
                     ->requiresConfirmation()
                     ->visible(fn (Session $record): bool => ! $record->isCurrentDevice())
+                    ->authorize('delete')
                     ->action(fn (Session $record) => $record->delete()),
             ])
             ->toolbarActions([
@@ -96,6 +97,7 @@ class SessionResource extends Resource
                     ->icon('heroicon-o-x-circle')
                     ->color('danger')
                     ->requiresConfirmation()
+                    ->authorize('deleteAny')
                     ->action(fn ($records) => $records->reject->isCurrentDevice()->each->delete()),
             ]);
     }

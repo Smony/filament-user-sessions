@@ -5,9 +5,15 @@ namespace Smony\FilamentUserSessions\Widgets;
 use Filament\Widgets\StatsOverviewWidget as BaseWidget;
 use Filament\Widgets\StatsOverviewWidget\Stat;
 use Smony\FilamentUserSessions\Models\Session;
+use Smony\FilamentUserSessions\Resources\SessionResource;
 
 class OnlineSessionsWidget extends BaseWidget
 {
+    public static function canView(): bool
+    {
+        return SessionResource::canViewAny();
+    }
+
     protected function getStats(): array
     {
         $threshold = now()->subMinutes(config('filament-user-sessions.online_threshold_minutes', 5))->timestamp;
