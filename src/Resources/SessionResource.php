@@ -9,7 +9,6 @@ use Filament\Resources\Resource;
 use Filament\Support\Icons\Heroicon;
 use Filament\Tables;
 use Filament\Tables\Table;
-use Jenssegers\Agent\Agent;
 use Smony\FilamentUserSessions\Models\Session;
 use Smony\FilamentUserSessions\Resources\SessionResource\Pages\ListSessions;
 use UnitEnum;
@@ -46,25 +45,19 @@ class SessionResource extends Resource
 
                 Tables\Columns\TextColumn::make('user_agent')
                     ->label('Device')
-                    ->formatStateUsing(function (?string $state): string {
-                        if (blank($state)) {
-                            return 'Unknown';
-                        }
-
-                        $agent = new Agent;
-                        $agent->setUserAgent($state);
-
-                        return sprintf(
-                            '%s on %s',
-                            $agent->browser() ?: 'Unknown browser',
-                            $agent->platform() ?: 'Unknown platform',
-                        );
-                    })
+                    ->formatStateUsing(fn (Session $record): string => $record->device())
                     ->wrap(),
+
+                Tables\Columns\IconColumn::make('new_device')
+                    ->label('')
+                    ->tooltip('First seen for this user recently — worth checking')
+                    ->state(fn (Session $record): bool => $record->isNewDevice())
+                    ->icon(fn (bool $state): ?string => $state ? 'heroicon-o-exclamation-triangle' : null)
+                    ->color('warning'),
 
                 Tables\Columns\TextColumn::make('last_activity')
                     ->label('Last active')
-                    ->formatStateUsing(fn (int $state) => \Carbon\Carbon::createFromTimestamp($state)->diffForHumans())
+                    ->formatStateUsing(fn (Session $record) => $record->lastActiveAt()->diffForHumans())
                     ->sortable(),
 
                 Tables\Columns\IconColumn::make('current_device')

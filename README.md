@@ -19,7 +19,7 @@ See every active session across your app — who's logged in, from where, on wha
 composer require smony/filament-user-sessions
 ```
 
-Make sure you have the sessions table migration (Laravel ships one, or generate it):
+Make sure you have the sessions table migration (Laravel ships one, or generate it), then migrate — this also creates the package's own `session_known_devices` table, used to flag new-device logins:
 
 ```bash
 php artisan session:table
@@ -45,14 +45,45 @@ public function panel(Panel $panel): Panel
 - An **"Online now"** stat widget
 - A **Revoke** action to instantly force-logout any session (except your own current one)
 - Bulk revoke for cleaning up stale sessions
+- A **"New device"** flag on sessions from a browser/platform combination not seen for that user before — useful for spotting a compromised account at a glance
 
 ## Configuration
 
-Optionally publish the config to change the sessions table name or the "online" threshold:
+Optionally publish the config to change the sessions table name, the "online" threshold, or the new-device detection window:
 
 ```bash
 php artisan vendor:publish --tag=filament-user-sessions-config
 ```
+
+## New device detection
+
+On every login, the plugin records a fingerprint (browser + platform, e.g. "Chrome on Windows") for that user in the `session_known_devices` table, which — unlike `sessions` — persists across logout. A session is flagged **New** in the table if its fingerprint was first seen for that user within the last 24 hours (configurable via `new_device_window_hours`).
+
+This is a coarse signal, not a strict security boundary: it doesn't fingerprint by IP (to avoid false positives from VPNs/mobile networks), so two different physical devices reporting the same browser/OS combination look identical.
+
+### Notifying your security team
+
+The first time (and only the first time) a device is seen for a user, whoever you configure as recipients gets notified via `Smony\FilamentUserSessions\Notifications\NewDeviceLogin`. The package has no way to know who your admins/security team are, so nothing is sent until you implement `Smony\FilamentUserSessions\Contracts\ResolvesNewDeviceRecipients` and point `new_device_notification_recipients` at it:
+
+```php
+use Illuminate\Contracts\Auth\Authenticatable;
+use Smony\FilamentUserSessions\Contracts\ResolvesNewDeviceRecipients;
+
+class SecurityTeamRecipients implements ResolvesNewDeviceRecipients
+{
+    public function resolve(Authenticatable $user): iterable
+    {
+        return User::where('is_superadmin', true)->get();
+    }
+}
+```
+
+```php
+// config/filament-user-sessions.php
+'new_device_notification_recipients' => \App\Notifications\SecurityTeamRecipients::class,
+```
+
+Configure delivery via `new_device_notification_channels` (default `['mail']`; add `database` for a Filament/Laravel database notification — requires `php artisan notifications:table` and `Notifiable` recipient models), or disable entirely with `notify_on_new_device => false`.
 
 ## Authorization
 
